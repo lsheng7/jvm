@@ -1,0 +1,50 @@
+/**
+ *
+ * 返回这个类的类加载器 一些实现会使用null来标识(根类)启动类加载器
+ * 如果这个类被启动类加载器加载了将会返回null
+ * Returns the class loader for the class.  Some implementations may use
+ * null to represent the bootstrap class loader. This method will return
+ * null in such implementations if this class was loaded by the bootstrap
+ * class loader.
+ *
+ * 如果存在安全管理器,并且能调用者的类加载器不为null以及
+ * 这个调用者的类加载器是不同于这个类所需的类加载器的继承体系
+ * <p> If a security manager is present, and the caller's class loader is
+ * not null and the caller's class loader is not the same as or an
+ * ancestor([ˈænsestə(r) 祖先、原型]
+ * ) of the class loader for the class whose class loader is requested,
+ * //这个方法会调用安全管理器的checkPermission方法确保这个类的类加载器是可以访问到的
+ * then
+ * this method calls the security manager's {@code checkPermission}
+ * method with a {@code RuntimePermission("getClassLoader")}
+ * permission to ensure it's ok to access the class loader for the class.
+ *
+ * 如果这个对象表示一个原生类型或者void 将会返回null
+ * <p>If this object
+ * represents a primitive type or void, null is returned.
+ *
+ * 加载类或者接口的类加载器
+ * @return  the class loader that loaded the class or interface
+ *          represented by this object.
+ * @throws SecurityException
+ *    if a security manager exists and its
+ *    {@code checkPermission} method denies
+ *    access to the class loader for the class.
+ * @see java.lang.ClassLoader
+ * @see SecurityManager#checkPermission
+ * @see java.lang.RuntimePermission
+ */
+
+//import sun.reflect.CallerSensitive;
+//
+//@CallerSensitive
+//public ClassLoader getClassLoader() {
+//    ClassLoader cl = getClassLoader0();
+//    if (cl == null)
+//    return null;
+//    SecurityManager sm = System.getSecurityManager();
+//    if (sm != null) {
+//    ClassLoader.checkClassLoaderPermission(cl, Reflection.getCallerClass());
+//    }
+//    return cl;
+//    }

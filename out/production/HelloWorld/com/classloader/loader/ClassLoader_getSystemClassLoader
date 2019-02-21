@@ -1,0 +1,84 @@
+
+       返回一个用于委托的系统类加载器
+       是针对一个新的ClassLoader实例默认的委托双亲
+       用于启动一个应用典型的类加载器
+     * Returns the system class loader for delegation.  This is the default
+     * delegation parent for new <tt>ClassLoader</tt> instances, and is
+     * typically the class loader used to start the application.
+     *
+
+     在运行时启动顺序中 这个方法第一次较早地被得到调用
+     创建一个系统类加载器并将它设置成一个线程调用的上下文类加载器
+     * <p> This method is first invoked early in the runtime's startup
+     * sequence, at which point it creates the system class loader and sets it
+     * as the context class loader of the invoking <tt>Thread</tt>.
+     *
+     默认的系统类加载器是一个与实现相关的类的实例
+     * <p> The default system class loader is an implementation-dependent
+     * instance of this class.
+     *
+
+     当这个方法被首次调用的时候，如果java.system.class.loader的系统属性被定义
+     那么这个系统属性的值会作为系统类加载器的名称被返回
+     * <p> If the system property "<tt>java.system.class.loader</tt>" is defined
+     * when this method is first invoked then the value of that property is
+     * taken to be the name of a class that will be returned as the system
+     * class loader.
+
+     使用默认的类加载器加载的类必须定义一个接受一个单独的ClassLoader类型的参数
+     的公共的构造器 用于作为委托的双亲
+     The class is loaded using the default system class loader
+     * and must define a public constructor that takes a single parameter of
+     * type <tt>ClassLoader</tt> which is used as the delegation parent.
+     一个实例会被使用默认的系统类加载器作为参数的构造器得到创建,
+     所生成的类加载器会被定义成系统类加载器
+     An instance is then created using this constructor with the default system
+     * class loader as the parameter.  The resulting class loader is defined
+     * to be the system class loader.
+     *
+
+     * <p> If a security manager is present, and the invoker's class loader is
+     * not <tt>null</tt> and the invoker's class loader is not the same as or
+     * an ancestor of the system class loader, then this method invokes the
+     * security manager's {@link
+     * SecurityManager#checkPermission(java.security.Permission)
+     * <tt>checkPermission</tt>} method with a {@link
+     * RuntimePermission#RuntimePermission(String)
+     * <tt>RuntimePermission("getClassLoader")</tt>} permission to verify
+     * access to the system class loader.  If not, a
+     * <tt>SecurityException</tt> will be thrown.  </p>
+     *
+     * @return  The system <tt>ClassLoader</tt> for delegation, or
+     *          <tt>null</tt> if none
+     *
+     * @throws  SecurityException
+     *          If a security manager exists and its <tt>checkPermission</tt>
+     *          method doesn't allow access to the system class loader.
+     *
+     * @throws  IllegalStateException
+     *          If invoked recursively during the construction of the class
+     *          loader specified by the "<tt>java.system.class.loader</tt>"
+     *          property.
+     *
+     * @throws  Error
+     *          If the system property "<tt>java.system.class.loader</tt>"
+     *          is defined but the named class could not be loaded, the
+     *          provider class does not define the required constructor, or an
+     *          exception is thrown by that constructor when it is invoked. The
+     *          underlying cause of the error can be retrieved via the
+     *          {@link Throwable#getCause()} method.
+     *
+     * @revised  1.4
+     */
+    @CallerSensitive
+    public static ClassLoader getSystemClassLoader() {
+        initSystemClassLoader();
+        if (scl == null) {
+            return null;
+        }
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            checkClassLoaderPermission(scl, Reflection.getCallerClass());
+        }
+        return scl;
+    }
